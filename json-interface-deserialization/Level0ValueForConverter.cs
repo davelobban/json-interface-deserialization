@@ -25,6 +25,9 @@ namespace json_interface_deserialization
                     case "Level1ValueFor":
                         return new Level0ValueFor(
                             new Level1ValueForFactory().GetNew(item["_iValueFor"].Value<JObject>()));
+                    case "Level0ValueFor":
+                        return new Level0ValueFor(
+                            new Level0ValueForFactory().GetNew(item["_iValueFor"].Value<JObject>()));
                     default:
                         throw new InvalidOperationException();
                 }

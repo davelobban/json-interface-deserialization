@@ -85,7 +85,7 @@ namespace Tests
         [Test]
         public void HappySerialiseTwoLevelsNested_EqualsUnserialisedValue()
         {
-            var printer = new EnvironmentPrinter();
+            var printer = new HappyEnvironmentPrinter();
             var level1 = new Level1ValueFor(printer);
             var level0 = new Level0ValueFor(level1);
 
@@ -93,8 +93,67 @@ namespace Tests
             var deserialised = JsonConvert.DeserializeObject<Level0ValueFor>(serialised, new Level0ValueForConverter());
 
             Assert.AreEqual(level0, deserialised);
-            Assert.AreEqual("L0: L1.. This is Preprod", deserialised.ValueFor(Env.Preprod));
+            Assert.AreEqual($"L0: L1.. {_happyToSay}This is Preprod", deserialised.ValueFor(Env.Preprod));
         }
+        [Test]
+        public void SerialiseThreeLevelsNested_EqualsUnserialisedValue()
+        {
+            var printer = new EnvironmentPrinter();
+            var level1 = new Level1ValueFor(printer);
+            var level0 = new Level0ValueFor(level1);
+            var level00 = new Level0ValueFor(level0);
+
+            var serialised = Serialise(level00);
+            var deserialised = JsonConvert.DeserializeObject<Level0ValueFor>(serialised, new Level0ValueForConverter());
+
+            Assert.AreEqual(level00, deserialised);
+            Assert.AreEqual($"L0: L0: L1.. This is Preprod", deserialised.ValueFor(Env.Preprod));
+        }
+        [Test]
+        public void HappySerialiseThreeLevelsNested_EqualsUnserialisedValue()
+        {
+            var printer = new HappyEnvironmentPrinter();
+            var level1 = new Level1ValueFor(printer);
+            var level0 = new Level0ValueFor(level1);
+            var level00 = new Level0ValueFor(level0);
+
+            var serialised = Serialise(level00);
+            var deserialised = JsonConvert.DeserializeObject<Level0ValueFor>(serialised, new Level0ValueForConverter());
+
+            Assert.AreEqual(level00, deserialised);
+            Assert.AreEqual($"L0: L0: L1.. {_happyToSay}This is Preprod", deserialised.ValueFor(Env.Preprod));
+        }
+        [Test]
+        public void SerialiseFourLevelsNested_EqualsUnserialisedValue()
+        {
+            var printer = new EnvironmentPrinter();
+            var level0wrappingPrinter = new Level0ValueFor(printer);
+            var level1 = new Level1ValueFor(level0wrappingPrinter);
+            var level0 = new Level0ValueFor(level1);
+            var level00 = new Level0ValueFor(level0);
+
+            var serialised = Serialise(level00);
+            var deserialised = JsonConvert.DeserializeObject<Level0ValueFor>(serialised, new Level0ValueForConverter());
+
+            Assert.AreEqual(level00, deserialised);
+            Assert.AreEqual($"L0: L0: L1.. L0: This is Preprod", deserialised.ValueFor(Env.Preprod));
+        }
+        [Test]
+        public void HappySerialiseFourLevelsNested_EqualsUnserialisedValue()
+        {
+            var printer = new HappyEnvironmentPrinter();
+            var level0wrappingPrinter = new Level0ValueFor(printer);
+            var level1 = new Level1ValueFor(level0wrappingPrinter);
+            var level0 = new Level0ValueFor(level1);
+            var level00 = new Level0ValueFor(level0);
+
+            var serialised = Serialise(level00);
+            var deserialised = JsonConvert.DeserializeObject<Level0ValueFor>(serialised, new Level0ValueForConverter());
+
+            Assert.AreEqual(level00, deserialised);
+            Assert.AreEqual($"L0: L0: L1.. L0: {_happyToSay}This is Preprod", deserialised.ValueFor(Env.Preprod));
+        }
+
         /*
         [Test]
         public void SerialiseFourLevelsNested_EqualsUnserialisedValue()
