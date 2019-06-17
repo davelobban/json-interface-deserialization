@@ -155,7 +155,7 @@ namespace Tests
         }
 
         [Test]
-        public void HappySerialiseFiveLevelsNested_EqualsUnserialisedValue()
+        public void HappySerialiseFiveLevelsNestedAroundL0_EqualsUnserialisedValue()
         {
             var printer = new HappyEnvironmentPrinter();
             var level0wrappingPrinter = new Level0ValueFor(printer);
@@ -173,5 +173,22 @@ namespace Tests
         }
 
 
+        [Test]
+        public void HappySerialiseFiveLevelsNestedAroundL1_EqualsUnserialisedValue()
+        {
+            var printer = new HappyEnvironmentPrinter();
+            var level1wrappingPrinter = new Level1ValueFor(printer);
+            var level1 = new Level1ValueFor(level1wrappingPrinter);
+            var level0 = new Level0ValueFor(level1);
+            var seed = "theseedvalue";
+            var seedableLevel = new SeedableValueFor(level0, $"{seed}");
+            var level11 = new Level1ValueFor(seedableLevel);
+
+            var serialised = Serialise(level11);
+            var deserialised = JsonConvert.DeserializeObject<Level1ValueFor>(serialised, new Level1ValueForConverter());
+
+            Assert.AreEqual(level11, deserialised);
+            Assert.AreEqual($"L1.. [{seed}].. L0: L1.. L1.. {_happyToSay}This is Preprod", deserialised.ValueFor(Env.Preprod));
+        }
     }
 }

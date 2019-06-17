@@ -1,50 +1,10 @@
-﻿using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
-namespace json_interface_deserialization
+﻿namespace json_interface_deserialization
 {
-    public class Level0ValueForConverter : JsonConverter
+    public class Level0ValueForConverter : IValueForConverter<Level0ValueFor>
     {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        protected override IValueFor ConstructedInstance(IValueFor value)
         {
-            serializer.Serialize(writer, value, typeof(Level0ValueFor));
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            var item = JObject.Load(reader);
-            if (item["Typ"].Value<string>() == "Level0ValueFor")
-            {
-                var typeName = item["_iValueFor"].Value<JObject>()["Typ"].Value<string>();
-                //object constructed;
-                switch (typeName)
-                {
-                    case "EnvironmentPrinter":
-                        return new Level0ValueFor(new EnvironmentPrinter());
-                    case "HappyEnvironmentPrinter":
-                        return new Level0ValueFor(new HappyEnvironmentPrinter());
-                    case "Level1ValueFor":
-                        return new Level0ValueFor(
-                            new Level1ValueForFactory().GetNew(item["_iValueFor"].Value<JObject>()));
-                    case "Level0ValueFor":
-                        return new Level0ValueFor(
-                            new Level0ValueForFactory().GetNew(item["_iValueFor"].Value<JObject>()));
-                    case "SeedableValueFor":
-                        return new Level0ValueFor(
-                            new SeedableValueForFactory().GetNew(item["_iValueFor"].Value<JObject>()));
-                    default:
-                        throw new InvalidOperationException($"Could not find a factory for type name {typeName} in ");
-                }
-            }
-            var value = serializer.Deserialize(reader, typeof(Level0ValueFor));
-            
-            return value;
-        }
-
-        public override bool CanConvert(Type objectType)
-        {
-            return (objectType == typeof(Level0ValueFor));
+            return new Level0ValueFor(value);
         }
     }
 }

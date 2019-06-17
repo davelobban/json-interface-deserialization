@@ -1,19 +1,12 @@
-﻿using System;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace json_interface_deserialization
 {
-    public class Level1ValueForFactory
+    public class Level1ValueForFactory : IValueForFactory<Level1ValueFor>
     {
-        public Level1ValueFor GetNew(JObject item)
+        protected override Level1ValueFor ConstructInstance(IValueFor value, JObject item)
         {
-            if (item["_iValueFor"].Value<JObject>()["Typ"].Value<string>() == "EnvironmentPrinter")
-                return new Level1ValueFor(new EnvironmentPrinter());
-            if (item["_iValueFor"].Value<JObject>()["Typ"].Value<string>() == "HappyEnvironmentPrinter")
-                return new Level1ValueFor(new HappyEnvironmentPrinter());
-            if (item["_iValueFor"].Value<JObject>()["Typ"].Value<string>() == "Level0ValueFor")
-                return new Level1ValueFor(new Level0ValueForFactory().GetNew(item["_iValueFor"].Value<JObject>()));
-            throw new InvalidOperationException();
+            return new Level1ValueFor(value);
         }
     }
 }
