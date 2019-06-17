@@ -17,7 +17,7 @@ namespace Tests
             var printer = new EnvironmentPrinter();
             var level1 = new Level1ValueFor(printer);
             var level0 = new Level0ValueFor(level1);
-            Assert.AreEqual(level0.ValueFor(Env.Preprod), "This is Preprod");
+            Assert.AreEqual("This is Preprod", level0.ValueFor(Env.Preprod));
         }
 
         [Test]
@@ -29,6 +29,28 @@ namespace Tests
             var deserialised = JsonConvert.DeserializeObject<EnvironmentPrinter>(serialised);
 
             Assert.AreEqual(printer, deserialised);
+        }
+
+        [Test]
+        public void SerialiseOneLevelsNested_EqualsUnserialisedValue()
+        {
+            var printer = new EnvironmentPrinter();
+            var level1 = new Level1ValueFor(printer);
+
+            var settings = new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            };
+            var serialised = JsonConvert.SerializeObject(level1, Formatting.Indented,
+                new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize
+                });
+            var deserialised = JsonConvert.DeserializeObject<Level1ValueFor>(serialised, new IValueForConverter());
+            //var deserialised = JsonConvert.DeserializeObject<Level1ValueFor>(serialised);
+
+            Assert.AreEqual(level1, deserialised);
+            Assert.AreEqual("This is Preprod", level1.ValueFor(Env.Preprod));
         }
 
         //[Test]
@@ -44,4 +66,6 @@ namespace Tests
         //    Assert.AreEqual(level0, deserialised);
         //}
     }
+
+
 }
