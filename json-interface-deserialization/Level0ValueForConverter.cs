@@ -16,7 +16,9 @@ namespace json_interface_deserialization
             var item = JObject.Load(reader);
             if (item["Typ"].Value<string>() == "Level0ValueFor")
             {
-                switch (item["_iValueFor"].Value<JObject>()["Typ"].Value<string>())
+                var typeName = item["_iValueFor"].Value<JObject>()["Typ"].Value<string>();
+                //object constructed;
+                switch (typeName)
                 {
                     case "EnvironmentPrinter":
                         return new Level0ValueFor(new EnvironmentPrinter());
@@ -28,8 +30,11 @@ namespace json_interface_deserialization
                     case "Level0ValueFor":
                         return new Level0ValueFor(
                             new Level0ValueForFactory().GetNew(item["_iValueFor"].Value<JObject>()));
+                    case "SeedableValueFor":
+                        return new Level0ValueFor(
+                            new SeedableValueForFactory().GetNew(item["_iValueFor"].Value<JObject>()));
                     default:
-                        throw new InvalidOperationException();
+                        throw new InvalidOperationException($"Could not find a factory for type name {typeName} in ");
                 }
             }
             var value = serializer.Deserialize(reader, typeof(Level0ValueFor));
