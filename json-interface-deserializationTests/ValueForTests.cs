@@ -37,17 +37,16 @@ namespace Tests
             var printer = new EnvironmentPrinter();
             var level1 = new Level1ValueFor(printer);
 
-            var settings = new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            };
+            //var settings = new JsonSerializerSettings()
+            //{
+            //    TypeNameHandling = TypeNameHandling.Auto
+            //};
             var serialised = JsonConvert.SerializeObject(level1, Formatting.Indented,
                 new JsonSerializerSettings
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Serialize
                 });
             var deserialised = JsonConvert.DeserializeObject<Level1ValueFor>(serialised, new IValueForConverter());
-            //var deserialised = JsonConvert.DeserializeObject<Level1ValueFor>(serialised);
 
             Assert.AreEqual(level1, deserialised);
             Assert.AreEqual("This is Preprod", level1.ValueFor(Env.Preprod));

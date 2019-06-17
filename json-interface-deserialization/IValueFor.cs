@@ -94,27 +94,27 @@ namespace json_interface_deserialization
         }
     }
 
-    public class Level1ValueForConverter : JsonConverter
-    {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            serializer.Serialize(writer, value, typeof(Level1ValueFor));
-        }
+    //public class Level1ValueForConverter : JsonConverter
+    //{
+    //    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    //    {
+    //        serializer.Serialize(writer, value, typeof(Level1ValueFor));
+    //    }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            //var item = JObject.Load(reader);
-            //var ivf = item["_iValueFor"].Value<string>();
-            ////return new Level1ValueFor();
-            var value = serializer.Deserialize(reader, typeof(Level1ValueFor));
-            return value;
-        }
+    //    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    //    {
+    //        //var item = JObject.Load(reader);
+    //        //var ivf = item["_iValueFor"].Value<string>();
+    //        ////return new Level1ValueFor();
+    //        var value = serializer.Deserialize(reader, typeof(Level1ValueFor));
+    //        return value;
+    //    }
 
-        public override bool CanConvert(Type objectType)
-        {
-            return (objectType == typeof(Level1ValueFor));
-        }
-    }
+    //    public override bool CanConvert(Type objectType)
+    //    {
+    //        return (objectType == typeof(Level1ValueFor));
+    //    }
+    //}
 
 
     public class IValueForConverter : JsonConverter
