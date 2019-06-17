@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,6 +20,7 @@ namespace json_interface_deserialization
             {
                 var typeName = item["_iValueFor"].Value<JObject>()["Typ"].Value<string>();
                 IValueFor constructed;
+                var parms= new Dictionary<string, object>();
                 switch (typeName)
                 {
                     case "EnvironmentPrinter":
@@ -33,6 +35,7 @@ namespace json_interface_deserialization
                     }
                     case "Level1ValueFor":
                     {
+                        //TODO: can tidy these
                         constructed =
                             new Level1ValueForFactory().GetNew(item["_iValueFor"].Value<JObject>());
                         break;
@@ -52,14 +55,26 @@ namespace json_interface_deserialization
                     default:
                         throw new InvalidOperationException($"Could not find a factory for type name {typeName} in converter");
                 }
+                //TODO: This is too specific
+                if (item["_seed"] != null)
+                {
+                    parms.Add("seed", item["_seed"].Value<string>());
+                }
+                else
+                {
+                    if (item["_iValueFor"].Value<JObject>()["_seed"] != null)
+                    {
+                        parms.Add("seed", item["_iValueFor"].Value<JObject>()["_seed"].Value<string>());
+                    }
+                }
 
-                return ConstructedInstance(constructed);
+                return ConstructedInstance(constructed, parms);
             }
 
             throw new InvalidOperationException($"Typ was not a property found in converter");
         }
 
-        protected abstract IValueFor ConstructedInstance(IValueFor value);
+        protected abstract IValueFor ConstructedInstance(IValueFor value, Dictionary<string, object> parms);
 
         public override bool CanConvert(Type objectType)
         {

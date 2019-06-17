@@ -7,6 +7,8 @@ namespace Tests
     public class ValueForTests
     {
         private readonly string _happyToSay = "Happy to  say, ";
+        private readonly string _seed1 = "thefirstseedvalue";
+        private readonly string _seed2 = "thesecondseedvalue";
 
         [SetUp]
         public void Setup()
@@ -189,6 +191,58 @@ namespace Tests
 
             Assert.AreEqual(level11, deserialised);
             Assert.AreEqual($"L1.. [{seed}].. L0: L1.. L1.. {_happyToSay}This is Preprod", deserialised.ValueFor(Env.Preprod));
+        }
+
+
+        [Test]
+        public void HappySerialiseFiveLevelsNestedAroundSeedable_EqualsUnserialisedValue()
+        {
+            var printer = new HappyEnvironmentPrinter();
+            var level1wrappingPrinter = new Level1ValueFor(printer);
+            var level1 = new Level1ValueFor(level1wrappingPrinter);
+            var level0 = new Level0ValueFor(level1);
+            var seedableLevel = new SeedableValueFor(level0, $"{_seed1}");
+            var seedableTop = new SeedableValueFor(seedableLevel, _seed2);
+
+            var serialised = Serialise(seedableTop);
+            var deserialised = JsonConvert.DeserializeObject<SeedableValueFor>(serialised, new SeedableValueForConverter());
+
+            //  Assert.AreEqual(seedableTop, deserialised);
+            Assert.AreEqual($"[{_seed2}].. [{_seed1}].. L0: L1.. L1.. {_happyToSay}This is Preprod", deserialised.ValueFor(Env.Preprod));
+        }
+
+        [Test]
+        public void HappySerialiseFiveLevelsNestedAroundSeedable2_EqualsUnserialisedValue()
+        {
+            var printer = new HappyEnvironmentPrinter();
+            var level1wrappingPrinter = new Level1ValueFor(printer);
+            var level1 = new Level1ValueFor(level1wrappingPrinter);
+            var seedableLevel = new SeedableValueFor(level1, $"{_seed1}");
+            var level0 = new Level0ValueFor(seedableLevel);
+            var seedableTop = new SeedableValueFor(level0, _seed2);
+
+            var serialised = Serialise(seedableTop);
+            var deserialised = JsonConvert.DeserializeObject<SeedableValueFor>(serialised, new SeedableValueForConverter());
+
+            //  Assert.AreEqual(seedableTop, deserialised);
+            Assert.AreEqual($"[{_seed2}].. L0: [{_seed1}].. L1.. L1.. {_happyToSay}This is Preprod", deserialised.ValueFor(Env.Preprod));
+        }
+
+        [Test]
+        public void HappySerialiseFiveLevelsNestedAroundSeedable3_EqualsUnserialisedValue()
+        {
+            var printer = new HappyEnvironmentPrinter();
+            var level1wrappingPrinter = new Level1ValueFor(printer);
+            var seedableLevel = new SeedableValueFor(level1wrappingPrinter, $"{_seed1}");
+            var level1 = new Level1ValueFor(seedableLevel);
+            var level0 = new Level0ValueFor(level1);
+            var seedableTop = new SeedableValueFor(level0, _seed2);
+
+            var serialised = Serialise(seedableTop);
+            var deserialised = JsonConvert.DeserializeObject<SeedableValueFor>(serialised, new SeedableValueForConverter());
+
+            //  Assert.AreEqual(seedableTop, deserialised);
+            Assert.AreEqual($"[{_seed2}].. L0: L1.. [{_seed1}].. L1.. {_happyToSay}This is Preprod", deserialised.ValueFor(Env.Preprod));
         }
     }
 }
